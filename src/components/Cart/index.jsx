@@ -1,29 +1,43 @@
+
 import './index.css'
 import Header from '../Header'
 import { useNavigate } from 'react-router'
-
-const cartItem = JSON.parse(localStorage.getItem('cartItem')) || []
-
-const onDeleteItem = id => {
-    const filteredCart = cartItem.filter(
-        eachItem => eachItem.id !== id
-    )
-    localStorage.setItem(
-        'cartItem',
-        JSON.stringify(filteredCart)
-    )
-
-    window.location.reload()
-}
+import { useState, useEffect } from 'react'
 
 const Cart = () => {
     const navigate = useNavigate()
+    const [cartItem, setCartItem] = useState([])
+
+  
+    const loadCart = () => {
+        const data = JSON.parse(localStorage.getItem('cartItem')) || []
+        setCartItem(data)
+    }
+
+    useEffect(() => {
+        loadCart()
+    }, [])
+
+    const onDeleteItem = id => {
+        const filteredCart = cartItem.filter(
+            eachItem => eachItem.id !== id
+        )
+
+        localStorage.setItem(
+            'cartItem',
+            JSON.stringify(filteredCart)
+        )
+
+        setCartItem(filteredCart) 
+    }
+
     return (
         <>
             <Header />
 
             <div className='cart-container'>
                 <h1 className='cart-heading'>My Cart</h1>
+
                 {cartItem.length === 0 ? (
                     <p className='empty-text'>Your Cart is Empty</p>
                 ) : (
@@ -35,26 +49,37 @@ const Cart = () => {
                                     alt={eachItem.name}
                                     className='cart-image'
                                 />
+
                                 <div>
                                     <h1 className='cart-name'>
                                         {eachItem.name}
                                     </h1>
+
                                     <p className='cart-brand'>
                                         {eachItem.brand}
                                     </p>
+
                                     <p className='cart-price'>
                                         {eachItem.price}
                                     </p>
+
                                     <p className='cart-rating'>
                                         {eachItem.rating}
                                     </p>
-                                    <button className='cart-delete' type='button' onClick={() =>
-                                        onDeleteItem(eachItem.id) }
+
+                                    <button
+                                        className='cart-delete'
+                                        type='button'
+                                        onClick={() => onDeleteItem(eachItem.id)}
                                     >
                                         Delete Cart
                                     </button>
-                                    <button className='buy-btns' type='button' onClick={() => 
-                                        navigate('/buynow')}>
+
+                                    <button
+                                        className='buy-btns'
+                                        type='button'
+                                        onClick={() => navigate('/buynow')}
+                                    >
                                         Buy Now
                                     </button>
                                 </div>
@@ -66,4 +91,5 @@ const Cart = () => {
         </>
     )
 }
+
 export default Cart
